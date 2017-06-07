@@ -1,0 +1,479 @@
+<apex:page Controller="ParkManagerSetupController">
+    <apex:slds />    
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <div class="slds-scope">
+            
+            <div class="slds-page-header">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-custom-5" title="Description of icon when needed">
+                            <svg class="slds-icon" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/custom-sprite/svg/symbols.svg#custom5')}"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="">Park Manager Setup Wizard!</h1>
+                        <p class="slds-text-body_small slds-line-height_reset">Please answer the questions below to customize Park Manager for your park.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="success" hidden="true">
+                <div aria-hidden="false" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-open">
+                    <div class="slds-modal__container slds-modal--prompt">
+                        <div class="slds-modal__header slds-theme--success slds-theme--alert-texture">
+                            <button onclick="hideModals()" class="slds-button slds-button--icon-inverse slds-modal__close">
+                                <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/action-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading--medium">Setup Complete!</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <div>
+                                <p>You have successfully customized Park Manager for your park! That's it. Let's check out the metadata...</p>
+                            </div>
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button onclick="hideModals()" class="slds-button slds-button--neutral">Okay</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>
+            </div>
+            
+            
+            <div id="error" hidden="true">
+                <div aria-hidden="false" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-open">
+                    <div class="slds-modal__container slds-modal--prompt">
+                        <div class="slds-modal__header slds-theme--error slds-theme--alert-texture">
+                            <button onclick="hideModals()" class="slds-button slds-button--icon-inverse slds-modal__close">
+                                <svg aria-hidden="true" class="slds-button__icon slds-button__icon--large">
+                                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/action-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading--medium">Setup Failed!</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <div>
+                                <p id="message">There was an unknown error!</p>
+                            </div>
+                            
+                        </div>
+                        <div class="slds-modal__footer slds-theme--default">
+                            <button onclick="hideModals()" class="slds-button slds-button--neutral">Okay</button>
+                        </div>               
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>
+            </div>
+            
+            
+            <div class="demo-only" style="padding:1rem;">
+                <div class="slds-progress">
+                    <ol id="progress" class="slds-progress__list">
+                        <li id="one" onclick="stepOne()" class="slds-progress__item slds-is-active">
+                            <button class="slds-button slds-progress__marker">
+                                <span class="slds-assistive-text">Park Amenities</span>
+                            </button>
+                        </li>
+                        <li id="two" onclick="stepTwo()" class="slds-progress__item">
+                            <button class="slds-button slds-progress__marker">
+                                <span class="slds-assistive-text">Safety Advisories</span>
+                            </button>
+                        </li>
+                        <li id="three" onclick="stepThree()" class="slds-progress__item">
+                            <button class="slds-button slds-progress__marker">
+                                <span class="slds-assistive-text">Hours of Operation</span>
+                            </button>
+                        </li>                      
+                    </ol>
+                    <div class="slds-progress-bar slds-progress-bar_x-small" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="progressbar">
+                        <span id="bar" class="slds-progress-bar__value" style="width:0%;">
+                            <span class="slds-assistive-text">Progress: 0%</span>
+                        </span>
+                    </div>
+                </div>
+            </div>      
+            
+            
+            <div id="root" class="slds-p-around_large">
+                
+                
+                <!-- CAMPERS -->
+                
+                
+                <div class="cards" id="campingCard">
+                    
+                    <article class="slds-card">
+                        
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-p-bottom_medium">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon-custom-custom32 slds-icon_container" title="">
+                                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/custom-sprite/svg/symbols.svg#custom32')}"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2>
+                                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                                            <span class="slds-text-heading_small">Park Amenities</span>
+                                        </a>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        
+                        <div class="slds-card__body slds-card__body_inner">
+                            
+                            <div class="demo-only">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Do you allow camping?</span>
+                                        <input type="checkbox" id="camping" name="camping" aria-describedby="camping-desc" />
+                                        <span id="camping-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Happy campers!</span>
+                                            <span class="slds-checkbox_off">No camping</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-only">
+                                <div class="slds-form-element slds-m-top_small">
+                                    
+                                    
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Do you allow recreational vehicles?</span>
+                                        <input onclick="rvoptions()" type="checkbox" name="rv" id="rv" aria-describedby="rv-desc" />
+                                        <span id="rv-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">RVs are OK!</span>
+                                            <span class="slds-checkbox_off">No RVs access</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-only slds-hidden rv-options">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Do you offer power outlet access?</span>
+                                        <input type="checkbox" name="power" id="power" aria-describedby="power-desc" />
+                                        <span id="power-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Electricity available</span>
+                                            <span class="slds-checkbox_off">No electricity</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-only slds-hidden rv-options">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Do you offer water access?</span>
+                                        <input type="checkbox" name="water" id="water" aria-describedby="water-desc" />
+                                        <span id="water-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Water available</span>
+                                            <span class="slds-checkbox_off">No water</span>
+                                        </span>
+                                    </label>
+                                </div>   
+                            </div>
+                            
+                        </div>
+                        <footer class="slds-card__footer">
+                            <button onclick="stepTwo()" class="slds-button slds-button_neutral">Next</button>
+                        </footer>
+                    </article>
+                </div>
+                
+                
+                <!-- BEARS -->            
+                <div class="cards" id="bearsCard" hidden="true">
+                    
+                    <article class="slds-card">           
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-p-bottom_medium">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-custom-82" title="">
+                                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/custom-sprite/svg/symbols.svg#custom82')}"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2>
+                                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                                            <span class="slds-text-heading_small">Safety Advisories</span>
+                                        </a>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        
+                        <div class="slds-card__body slds-card__body_inner">
+                            
+                            <div class="demo-only">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Is your park in bear country?</span>
+                                        <input onclick="bearoptions()" type="checkbox" id="hasBears" name="bears" aria-describedby="bears-desc" />
+                                        <span id="bears-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Yes, it's unbearable!</span>
+                                            <span class="slds-checkbox_off">No bear presence</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="demo-only slds-hidden bear-options">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Do you have black bears?</span>
+                                        <input type="checkbox" name="black" id="black" aria-describedby="black-desc" />
+                                        <span id="black-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Black bears present</span>
+                                            <span class="slds-checkbox_off">No black bears</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            
+                            
+                            <div class="demo-only slds-hidden bear-options">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Do you have grizzly bears?</span>
+                                        <input type="checkbox" name="grizzly" id="grizzly" aria-describedby="grizzly-desc" />
+                                        <span id="grizzly-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Grizzly bears present</span>
+                                            <span class="slds-checkbox_off">No grizzly bears</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-only slds-hidden bear-options">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Do you have brown bears?</span>
+                                        <input type="checkbox" name="brown" id="brown" aria-describedby="brown-desc" />
+                                        <span id="brown-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Brown bears present</span>
+                                            <span class="slds-checkbox_off">No brown bears</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <footer class="slds-card__footer">
+                            <button onclick="stepOne()" class="slds-button slds-button_neutral">Back</button>
+                            <button onclick="stepThree()" class="slds-button slds-button_neutral">Next</button>                            
+                        </footer>
+                    </article>
+                </div>
+                
+                <div class="cards" id="hoursCard" hidden="true">
+                    
+                    <article class="slds-card">           
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-p-bottom_medium">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-custom-95" title="">
+                                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/custom-sprite/svg/symbols.svg#custom95')}"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2>
+                                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                                            <span class="slds-text-heading_small">Hours of Operation</span>
+                                        </a>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        
+                        <div class="slds-card__body slds-card__body_inner">
+                            
+                            <div class="demo-only">
+                                <div class="slds-form-element slds-m-top_small">
+                                    <label class="slds-checkbox_toggle slds-grid">
+                                        <span class="slds-form-element__label slds-m-bottom_none slds-col slds-size_1-of-2">Is your park always open?</span>
+                                        <input onclick="hoursoptions()" type="checkbox" id="always" name="hours" aria-describedby="hours-desc" />
+                                        <span id="hours-desc" class="slds-checkbox_faux_container slds-col slds-size_2-of-2" aria-live="assertive">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-checkbox_on">Open 24-hours</span>
+                                            <span class="slds-checkbox_off">Specific hours</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>    
+                            
+                            <div class="slds-form-element slds-m-top_small slds-m-bottom_x-small slds-border_bottom">
+                                
+                                
+                            </div>
+                            <fieldset class="slds-form-element">
+                                
+                                
+                                <div class="slds-form-element hours-options slds-m-top_small">
+                                    <label class="slds-form-element__label" for="open">Park opens at: </label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="open">
+                                                <OPTION value="6">6 AM</OPTION>            
+                                                <OPTION value="7">7 AM</OPTION>            
+                                                <OPTION value="8">8 AM</OPTION>            
+                                                <OPTION value="9">9 AM</OPTION>            
+                                                <OPTION value="10">10 AM</OPTION>  
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-form-element hours-options slds-m-top_small">
+                                    <label class="slds-form-element__label" for="close">Park closes at: </label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="close">
+                                                <OPTION value="19">7 PM</OPTION>            
+                                                <OPTION value="20">8 PM</OPTION>            
+                                                <OPTION value="21">9 PM</OPTION>            
+                                                <OPTION value="22">10 PM</OPTION>            
+                                                <OPTION value="23">11 PM</OPTION> 
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </fieldset>  
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="slds-card__footer">
+                            <button onclick="stepTwo()" class="slds-button slds-button_neutral">Back</button>
+                            <button onclick="submit()" class="slds-button slds-button_brand">Done</button>                            
+                        </footer>
+                    </article>
+                </div>
+                
+            </div>
+        </div>
+        <script>
+        function getConfig() {
+            
+            var config = {
+                campingAllowed : document.getElementById('camping').checked,
+                rvAllowed : document.getElementById('rv').checked,
+                hasPower : document.getElementById('power').checked,
+                hasWater : document.getElementById('water').checked,
+                hasGrizzlyBears : document.getElementById('grizzly').checked,
+                hasBrownBears : document.getElementById('brown').checked,
+                hasBlackBears : document.getElementById('black').checked,
+                openHour : document.getElementById('open').value,
+                closeHour : document.getElementById('close').value
+            }
+            if($('#always').is(':checked')) {
+                delete config.openHour;
+                delete config.closeHour;
+            }
+            console.log(config);
+            
+            return config;
+        }
+        
+        function submit() {
+            var c = getConfig();
+            ParkManagerSetupController.configureParkManager(c, done);
+        }
+        function done(res, mes) {
+            
+            if(mes.statusCode == 200) {
+                $('#success').show();
+            }
+            else{
+                console.log('Error: %s', mes.statusCode, mes.message);
+                console.log(mes);
+                $('#message').html(mes.message);
+                $('#error').show()
+            }
+            
+        }
+        function hideModals() {
+            $('#error,#success').hide();
+        }
+        function rvoptions() { 
+            var checked = $('#rv').is(':checked');
+            
+            if(checked) {
+                $('.rv-options').removeClass('slds-hidden');
+            }
+            else {
+                $('.rv-options').addClass('slds-hidden');
+            }
+        }
+        function bearoptions() {
+            var checked = $('#hasBears').is(':checked');
+            if(checked) {
+                
+                $('.bear-options').removeClass('slds-hidden');
+            }
+            else {
+                $('.bear-options').addClass('slds-hidden');
+            }
+        }
+        function hoursoptions() {
+            var checked = $('#always').is(':checked');
+            if(!checked) {
+                $('.hours-options').removeClass('slds-hidden');   
+            }
+            else {
+                $('.hours-options').addClass('slds-hidden');
+            }
+        }
+        function stepOne() {
+            $('#progress li').removeClass('slds-is-active');
+            $('#one').addClass('slds-is-active');
+            $('#bar').css('width', '0%');
+            $('.cards').hide();
+            $('#campingCard').show();
+        }
+        function stepTwo() {
+            $('#progress li').removeClass('slds-is-active');
+            $('#two').addClass('slds-is-active');
+            $('#bar').css('width', '50%');
+            $('.cards').hide();
+            $('#bearsCard').show();
+        }
+        function stepThree() {
+            $('#progress li').removeClass('slds-is-active');
+            $('#three').addClass('slds-is-active');
+            $('#bar').css('width', '100%');
+            $('.cards').hide();
+            $('#hoursCard').show();
+        }
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> 
+        </html>
+        </apex:page>
